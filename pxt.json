@@ -11,7 +11,8 @@
         "main.ts",
         "README.md",
         "main.py",
-        "custom.ts"
+        "custom.ts",
+        "ginobot.ts"
     ],
     "testFiles": [
         "test.ts"
