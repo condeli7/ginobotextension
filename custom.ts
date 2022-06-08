@@ -36,6 +36,23 @@ enum RotateDirection {
     //% block="right"
     Right
 }
+
+/**
+ * SensorsPosition
+ */
+enum SensorsPosition {
+    //% block="back"
+    Back,
+    //% block="front_left"
+    Front_Left,
+    //% block="front_right"
+    Front_Right,   
+    //% block="bottom_left"
+    Bottom_Left,  
+    //% block="bottom_right"
+    Bottom_Right
+}
+
 /**
  * RoverColors: Some common colors
  */
@@ -65,6 +82,16 @@ enum CustomColors {
 //% weight=1000 color=#00AFF0 icon="\uf121"
 namespace ginobot {
 
+    function i2cRead(command: string): number{
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8(command));
+        basic.pause(50)
+        let data = pins.i2cReadBuffer(22, 13);
+        basic.pause(50)
+        let dataString = data.toString();
+        let numberValue = parseInt(dataString);
+        return numberValue;
+    }
+
     function get_speed_value(x: speed): string {
         let speedNum = "0"
         if (x == speed.Low) {
@@ -82,6 +109,22 @@ namespace ginobot {
         let green = Math.floor(x / 256) % 256;
         let blue = x % 256;
         return [red.toString(), green.toString(), blue.toString()];
+    }
+
+    function get_sensors_position_string(x: SensorsPosition): string {
+        if (x == SensorsPosition.Back) {
+            return "BACK";
+        } else if (x == SensorsPosition.Front_Left) {
+            return "FL";
+        } else if (x == SensorsPosition.Front_Right) {
+            return "FR";
+        } else if (x == SensorsPosition.Bottom_Left) {
+            return "LINE_L";
+        } else if (x == SensorsPosition.Bottom_Right) {
+            return "LINE_R";
+        } else {
+            return "";
+        }
     }
 
     function get_lights_position_string(x: LightsPosition): string {
@@ -331,7 +374,7 @@ namespace ginobot {
 //-----------------------------------------------------------------------------------------------------------------------------//
 
 // "Sound" BLOCKS
-
+//-----------------------------------------------------------------------------------------------------------------------------//
     /**
       * Stop all sounds
       */
@@ -341,8 +384,7 @@ namespace ginobot {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_buzzer_freq(0)"))
         basic.pause(50)
     }
-
-
+//-----------------------------------------------------------------------------------------------------------------------------//
     /**
       * Play a note
       * @param freq value 
@@ -353,7 +395,7 @@ namespace ginobot {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_buzzer_freq(" + frequency.toString() + ")"))
         basic.pause(50)
     }
-
+//-----------------------------------------------------------------------------------------------------------------------------//
     /**
   * Play a note for duration
   * @param freq value
@@ -366,5 +408,25 @@ namespace ginobot {
         basic.pause(duration * 1000)
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_buzzer_freq(0)"))
         basic.pause(50)
+    }
+//-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+     * Get Ultrasonic distance in cm
+     */
+     //% block="get ultrasonic distance (cm)" weight=10 color="#D400D4"
+    //% subcategory=Sensors
+    export function getUltrasonicDistance(): number {
+        let readValue = i2cRead("get_ultrasound_dist()")
+        return readValue/10;
+    } 
+
+    /**
+ * Get Ultrasonic distance in cm
+ */
+    //% block="get IR $sensorPos value" weight=10 color="#D400D4"
+    //% subcategory=Sensors
+    export function getIR_digital(sensorPos: SensorsPosition): boolean {
+        let readValue = i2cRead("get_IR_" + get_sensors_position_string(sensorPos) + "_digital()");
+        return readValue ? true : false;
     }
 }
