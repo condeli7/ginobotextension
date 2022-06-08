@@ -1,5 +1,5 @@
 /**
- * Custom blocks
+ * Speed
  */
 enum speed {
     //% block="low"
@@ -8,6 +8,58 @@ enum speed {
     Medium,
     //% block="high"
     High
+}
+/**
+ * LightsPosition
+ */
+enum LightsPosition {
+    //% block="front"
+    Front,
+    //% block="back"
+    Back
+}
+/**
+ * MoveDirection
+ */
+enum MoveDirection {
+    //% block="forward"
+    Forward,
+    //% block="backwards"
+    Backwards
+}
+/**
+ * RotateDirection
+ */
+enum RotateDirection {
+    //% block="left"
+    Left,
+    //% block="right"
+    Right
+}
+/**
+ * RoverColors: Some common colors
+ */
+enum CustomColors {
+    //% block="red"
+    Red = 0xFF0000,
+    //% block="orange"
+    Orange = 0xFFA500,
+    //% block="yellow"
+    Yellow = 0xFFFF00,
+    //% block="green"
+    Green = 0x00FF00,
+    //% block="blue"
+    Blue = 0x0000FF,
+    //% block="indigo"
+    Indigo = 0x4b0082,
+    //% block="violet"
+    Violet = 0x8a2be2,
+    //% block="purple"
+    Purple = 0xFF00FF,
+    //% block="white"
+    White = 0xFFFFFF,
+    //% block="black"
+    Black = 0x000000
 }
 
 //% weight=1000 color=#00AFF0 icon="\uf121"
@@ -25,156 +77,294 @@ namespace ginobot {
         return speedNum;
     }
 
-    /**
-    * Commands the Ginobot to move forward with speed x (0-100)
-    * @param x speed value (0-100), eg: 100
-    */
-    //% block="set front lights $r" color=#000000
-    export function set_front_lights_red(r: number): void {
-        // Add code here
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_front_red("+r+")"))
+    function get_rgb_from_decimal(x: number): string[]{
+        let red = Math.floor(x / (256 * 256));
+        let green = Math.floor(x / 256) % 256;
+        let blue = x % 256;
+        return [red.toString(), green.toString(), blue.toString()];
+    }
+
+    function get_lights_position_string(x: LightsPosition): string {
+       if(x == LightsPosition.Front){
+           return "front";
+       }else{
+           return "back";
+       }
+    }
+
+    function get_move_direction_string(x: MoveDirection): string {
+        if (x == MoveDirection.Forward) {
+            return "forward";
+        } else {
+            return "backward";
+        }
+    }
+
+    function get_rotate_direction_string(x: RotateDirection): string {
+        if (x == RotateDirection.Left) {
+            return "left";
+        } else {
+            return "right";
+        }
     }
 
 // "MOVEMENT" BLOCKS
+//-----------------------------------------------------------------------------------------------------------------------------//
     /**
     * Commands the Ginobot to stop movement
     */
-    //% block="stop movement"
+    //% block="stop movement" color="#4C97FF" weight=34
     //% subcategory=Movement
     export function stop_movement(): void {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_backward(0)"))
-        basic.pause(200)
+        basic.pause(50)
     }
-
-    /**
-        * Commands the Ginobot to rotate right with speed x
-        * @param x speed value, eg: High
-        * @param duration value (seconds), eg: 1 second
-        */
-    //% block="rotate right at $x speed for $duration seconds"
-    //% subcategory=Movement
-    export function rotate_right_duration(x: speed, duration: number): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("rotate_right(" + get_speed_value(x) + ")"))
-        basic.pause(duration * 1000)
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_backward(0)"))
-        basic.pause(200)
-    }
-
-    /**
-    * Commands the Ginobot to rotate right with speed x
-    * @param x speed value, eg: High
-    */
-    //% block="rotate right at $x speed"
-    //% subcategory=Movement
-    export function rotate_right(x: speed): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("rotate_right(" + get_speed_value(x) + ")"))
-        basic.pause(200)
-    }
-
-    /**
-    * Commands the Ginobot to turn right with speed x
-    * @param x speed value, eg: High
-    * @param duration value (seconds), eg: 1 second
-    */
-    //% block="turn right at $x speed for $duration seconds"
-    //% subcategory=Movement
-    export function turn_right_duration(x: speed, duration: number): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("turn_right(" + get_speed_value(x) + ")"))
-        basic.pause(duration * 1000)
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_backward(0)"))
-        basic.pause(200)
-    }
-
-    /**
-        * Commands the Ginobot to turn right with speed x
-        * @param x speed value, eg: High
-        */
-    //% block="turn right at $x speed"
-    //% subcategory=Movement
-    export function turn_right(x: speed): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("turn_right(" + get_speed_value(x) + ")"))
-        basic.pause(200)
-    }
-
-    /**
-    * Commands the Ginobot to move backwards with speed x
-    * @param x speed value, eg: High
-    * @param duration value (seconds), eg: 1 second
-    */
-    //% block="move backwards at $x speed for $duration seconds"
-     //% subcategory=Movement
-    export function move_backwards_duration(x: speed, duration: number): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_backward(" + get_speed_value(x) + ")"))
-        basic.pause(duration * 1000)
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_backward(0)"))
-        basic.pause(200)
-    }
-
-    /**
-    * Commands the Ginobot to move backwards with speed x
-    * @param x speed value, eg: High
-    */
-    //% block="move backwards at $x speed"
-    //% subcategory=Movement
-    export function move_backwards(x: speed): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_backward(" + get_speed_value(x) + ")"))
-        basic.pause(200)
-    }
-
+//-----------------------------------------------------------------------------------------------------------------------------//
     /**
     * Commands the Ginobot to move forward with speed x
+    * @param dir move direction
+    * @param x speed value, eg: High
+    */
+    //% block="move $dir at $x speed" color="#4C97FF" weight weight=33
+    //% group=Move
+    //% subcategory=Movement
+    export function move(dir:MoveDirection, x: speed): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_" + get_move_direction_string(dir) + "(" + get_speed_value(x) + ")"))
+        basic.pause(50)
+    }
+
+//-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+    * Commands the Ginobot to move forward with speed x
+    * @param dir move direction
     * @param x speed value, eg: High
     * @param duration value (seconds), eg: 1 second
     */
-    //% block="move forward at $x speed for $duration seconds"
+    //% block="move $dir at $x speed for $duration seconds" color="#4C97FF" weight=32
+    //% group=Move
     //% subcategory=Movement
-    export function move_forward_duration(x: speed, duration: number): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_forward(" + get_speed_value(x) + ")"))
+    export function move_duration(dir:MoveDirection, x: speed, duration: number): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_" + get_move_direction_string(dir) + "(" + get_speed_value(x) + ")"))
         basic.pause(duration * 1000)
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_forward(0)"))
-        basic.pause(200)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_" + get_move_direction_string(dir) + "(0)"))
+        basic.pause(50)
     }
-
+//-----------------------------------------------------------------------------------------------------------------------------//
     /**
-    * Commands the Ginobot to move forward with speed x
+     * Commands the Ginobot to turn with speed x
+    * @param dir rotate direction
+     * @param x speed value, eg: High
+     */
+    //% block="turn $dir at $x speed" color="#4C97FF" weight=23
+    //% group=Turn
+    //% subcategory=Movement
+    export function turn(dir:RotateDirection,x: speed): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("turn_"+get_rotate_direction_string(dir)+"(" + get_speed_value(x) + ")"))
+        basic.pause(50)
+    }
+//-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+    * Commands the Ginobot to turn with speed x for a duration
+    * @param dir rotate direction
+    * @param x speed value, eg: High
+    * @param duration value (seconds), eg: 1 second
+    */
+    //% block="turn $dir at $x speed for $duration seconds" color="#4C97FF" weight=22
+    //% group=Turn
+    //% subcategory=Movement
+    export function turn_duration(dir: RotateDirection, x: speed, duration: number): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("turn_" + get_rotate_direction_string(dir) +"(" + get_speed_value(x) + ")"))
+        basic.pause(duration * 1000)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("turn_" + get_rotate_direction_string(dir) + "(0)"))
+        basic.pause(50)
+    }
+//-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+    * Commands the Ginobot to rotate with speed x
+    * @param dir rotate direction
     * @param x speed value, eg: High
     */
-    //% block="move forward at $x speed"
+    //% block="rotate $dir at $x speed" color="#4C97FF" weight=13
+    //% group=Rotate
     //% subcategory=Movement
-    export function move_forward(x: speed): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_forward(" + get_speed_value(x) + ")"))
-        basic.pause(200)
+    export function rotate_right(dir: RotateDirection, x: speed): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("rotate_" + get_rotate_direction_string(dir) + "(" + get_speed_value(x) + ")"))
+        basic.pause(50)
     }
+//-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+    * Commands the Ginobot to rotate with speed x for a duration
+    * @param dir rotate direction
+    * @param x speed value, eg: High
+    * @param duration value (seconds), eg: 1 second
+    */
+    //% block="rotate $dir at $x speed for $duration seconds" color="#4C97FF" weight=12
+    //% group=Rotate
+    //% subcategory=Movement
+    export function rotate_right_duration(dir: RotateDirection,x: speed, duration: number): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("rotate_" + get_rotate_direction_string(dir) + "(" + get_speed_value(x) + ")"))
+        basic.pause(duration * 1000)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("rotate_" + get_rotate_direction_string(dir) + "(0)"))
+        basic.pause(50)
+    }
+
 
 // "Lights" BLOCKS
+//-----------------------------------------------------------------------------------------------------------------------------//
     /**
-      * Sets the Ginobot front RGB red LED with intensity x (0-255), green LED with intensity y (0-255) and blue LED with intensity z (0-255)
-      * @param red value (0-255), eg: 100
-      * @param green value (0-255), eg: 100
-      * @param blue value (0-255), eg: 100
+      * Turns off front and back lights
       */
-    //% block="set front lights Red: $red Green: $green Blue: $blue"
-    //% subcategory=RGB_Lights
-    //% red.min=0 red.max=255 red.defl=0
-    //% green.min=0 green.max=255 green.defl=0
-    //% blue.min=0 blue.max=255 blue.defl=0
-    export function set_front_lights_rgb(red: number, green: number, blue: number): void {
-        if (red > 255) red = 255
-        if (green > 255) green = 255
-        if (blue > 255) blue = 255
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_front_rgb(" + red.toString() + "," + green.toString()+"," + blue.toString()+")"))
-        basic.pause(200)
+    //% block="turn off both lights" color="#5C2D91" weight=41
+    //% subcategory=Lights
+    export function turn_off_both_lights(): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_front_rgb(0,0,0)"))
+        basic.pause(50)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_back_rgb(0,0,0)"))
+        basic.pause(50)
     }
+//-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+      * Sets the Ginobot lights to a color
+      * @param LightsPosition value
+      */
+    //% block="turn off $pos lights" color="#5C2D91" weight=40
+    //% subcategory=Lights
+    export function turn_off_lights(pos: LightsPosition): void {
+        let lightsPos = get_lights_position_string(pos);
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_" + lightsPos + "_rgb(0,0,0)"))
+        basic.pause(50)
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+      * Sets the Ginobot lights to a color
+      * @param LightsPosition value
+      * @param color value
+      */
+    //% block="set $pos lights $color" color="#5C2D91" weight=30
+    //% subcategory=Lights
+    //% color.shadow="colorNumberPicker"
+    export function set_lights_rgb(pos: LightsPosition, color: number): void {
+        let lightsPos = get_lights_position_string(pos);
+        let rgb = get_rgb_from_decimal(color);
+
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_" + lightsPos + "_rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")"))
+        basic.pause(50)
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+      * Sets the Ginobot lights to a color for a duration
+      * @param LightsPosition value
+      * @param color value
+    * @param duration value (seconds), eg: 1 second
+      */
+    //% block="set $pos lights $color for $duration seconds" color="#5C2D91" weight=22
+    //% subcategory=Lights
+    //% color.shadow="colorNumberPicker"
+    export function set_lights_rgb_duration(pos: LightsPosition, color: number, duration: number): void {
+        let lightsPos = get_lights_position_string(pos);
+        let rgb = get_rgb_from_decimal(color);
+
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_" + lightsPos + "_rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")"))
+        basic.pause(duration * 1000)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_" + lightsPos + "_rgb(0,0,0)"))
+        basic.pause(50)
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+      * Sets the Ginobot lights to a color
+      * @param color value
+      */
+    //% block="set both lights $color" color="#5C2D91" weight=21
+    //% subcategory=Lights
+    //% color.shadow="colorNumberPicker"
+    export function set_both_lights_rgb(color: number): void {
+        let rgb = get_rgb_from_decimal(color);
+
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_front_rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")"))
+        basic.pause(50)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_back_rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")"))
+        basic.pause(50)
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+      * Sets the Ginobot lights to a color for a duration
+      * @param color value
+    * @param duration value (seconds), eg: 1 second
+      */
+    //% block="set both lights $color for $duration seconds" color="#5C2D91" weight=20
+    //% subcategory=Lights
+    //% color.shadow="colorNumberPicker"
+    export function set_both_lights_rgb_duration(color: number, duration: number): void {
+        let rgb = get_rgb_from_decimal(color);
+
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_front_rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")"))
+        basic.pause(50)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_back_rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")"))
+        basic.pause(duration * 1000)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_front_rgb(0,0,0)"))
+        basic.pause(50)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_back_rgb(0,0,0)"))
+        basic.pause(50)
+    }
+//-----------------------------------------------------------------------------------------------------------------------------//
+    /**
+      * Blink the Ginobot lights to a color
+      * @param LightsPosition value
+      * @param color value
+    * @param duration value (seconds), eg: 1 second
+      */
+    //% block="blink $pos lights $color for $duration seconds" color="#5C2D91" weight=10
+    //% subcategory=Lights
+    //% color.shadow="colorNumberPicker"
+    export function blink_lights_duration(pos: LightsPosition, color: number, duration: number): void {
+        let lightsPos = get_lights_position_string(pos);
+        let rgb = get_rgb_from_decimal(color);
+        let endCount = (duration*1000)/200;
+        for (let i = 0; i < endCount; i++) {
+            pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_" + lightsPos + "_rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")"))
+            basic.pause(100)
+            pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_RGB_" + lightsPos + "_rgb(0,0,0)"))
+            basic.pause(100)
+        }
+        basic.pause(50)
+    }
+//-----------------------------------------------------------------------------------------------------------------------------//
 
 // "Sound" BLOCKS
+
     /**
-      * Sets the Ginobot front RGB red LED with intensity x (0-255), green LED with intensity y (0-255) and blue LED with intensity z (0-255)
+      * Stop all sounds
+      */
+    //% block="stop all sounds" weight=30 color="#E63022"
+    //% subcategory=Sounds
+    export function stop_all_sounds(): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_buzzer_freq(0)"))
+        basic.pause(50)
+    }
+
+
+    /**
+      * Play a note
       * @param freq value 
       */
-    //% block="set buzzer frequency at $freq"
+    //% block="play note %note=device_note" weight=20 color="#E63022"
     //% subcategory=Sounds
-    export function set_buzzer_freq(freq: number): void {
-        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_buzzer_freq(" + freq.toString() + ")"))
-        basic.pause(200)
+    export function play_note(frequency: number): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_buzzer_freq(" + frequency.toString() + ")"))
+        basic.pause(50)
+    }
+
+    /**
+  * Play a note for duration
+  * @param freq value
+    * @param duration value (seconds), eg: 1 second
+  */
+    //% block="play note %note=device_note for $duration seconds" weight=10 color="#E63022"
+    //% subcategory=Sounds
+    export function play_note_duration(frequency: number, duration: number): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_buzzer_freq(" + frequency.toString() + ")"))
+        basic.pause(duration * 1000)
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_buzzer_freq(0)"))
+        basic.pause(50)
     }
 }
