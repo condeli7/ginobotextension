@@ -1,7 +1,7 @@
 /**
  * Speed
  */
-enum speed {
+enum Threshold {
     //% block="low"
     Low,
     //% block="medium"
@@ -92,16 +92,28 @@ namespace ginobot {
         return numberValue;
     }
 
-    function get_speed_value(x: speed): string {
+    function get_speed_value(x: Threshold): string {
         let speedNum = "0"
-        if (x == speed.Low) {
+        if (x == Threshold.Low) {
             speedNum = "60"
-        } else if (x == speed.Medium) {
+        } else if (x == Threshold.Medium) {
             speedNum = "80"
-        } else if (x == speed.High) {
+        } else if (x == Threshold.High) {
             speedNum = "100"
         }
         return speedNum;
+    }
+
+    function get_ir_threshold_value(x: Threshold): string {
+        let thr = "0"
+        if (x == Threshold.Low) {
+            thr = "30"
+        } else if (x == Threshold.Medium) {
+            thr = "60"
+        } else if (x == Threshold.High) {
+            thr = "90"
+        }
+        return thr;
     }
 
     function get_rgb_from_decimal(x: number): string[]{
@@ -171,7 +183,7 @@ namespace ginobot {
     //% block="move $dir at $x speed" color="#4C97FF" weight weight=33
     //% group=Move
     //% subcategory=Movement
-    export function move(dir:MoveDirection, x: speed): void {
+    export function move(dir: MoveDirection, x: Threshold): void {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_" + get_move_direction_string(dir) + "(" + get_speed_value(x) + ")"))
         basic.pause(50)
     }
@@ -186,7 +198,7 @@ namespace ginobot {
     //% block="move $dir at $x speed for $duration seconds" color="#4C97FF" weight=32
     //% group=Move
     //% subcategory=Movement
-    export function move_duration(dir:MoveDirection, x: speed, duration: number): void {
+    export function move_duration(dir: MoveDirection, x: Threshold, duration: number): void {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_" + get_move_direction_string(dir) + "(" + get_speed_value(x) + ")"))
         basic.pause(duration * 1000)
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("move_" + get_move_direction_string(dir) + "(0)"))
@@ -201,7 +213,7 @@ namespace ginobot {
     //% block="turn $dir at $x speed" color="#4C97FF" weight=23
     //% group=Turn
     //% subcategory=Movement
-    export function turn(dir:RotateDirection,x: speed): void {
+    export function turn(dir: RotateDirection, x: Threshold): void {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("turn_"+get_rotate_direction_string(dir)+"(" + get_speed_value(x) + ")"))
         basic.pause(50)
     }
@@ -215,7 +227,7 @@ namespace ginobot {
     //% block="turn $dir at $x speed for $duration seconds" color="#4C97FF" weight=22
     //% group=Turn
     //% subcategory=Movement
-    export function turn_duration(dir: RotateDirection, x: speed, duration: number): void {
+    export function turn_duration(dir: RotateDirection, x: Threshold, duration: number): void {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("turn_" + get_rotate_direction_string(dir) +"(" + get_speed_value(x) + ")"))
         basic.pause(duration * 1000)
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("turn_" + get_rotate_direction_string(dir) + "(0)"))
@@ -230,7 +242,7 @@ namespace ginobot {
     //% block="rotate $dir at $x speed" color="#4C97FF" weight=13
     //% group=Rotate
     //% subcategory=Movement
-    export function rotate_right(dir: RotateDirection, x: speed): void {
+    export function rotate_right(dir: RotateDirection, x: Threshold): void {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("rotate_" + get_rotate_direction_string(dir) + "(" + get_speed_value(x) + ")"))
         basic.pause(50)
     }
@@ -244,7 +256,7 @@ namespace ginobot {
     //% block="rotate $dir at $x speed for $duration seconds" color="#4C97FF" weight=12
     //% group=Rotate
     //% subcategory=Movement
-    export function rotate_right_duration(dir: RotateDirection,x: speed, duration: number): void {
+    export function rotate_right_duration(dir: RotateDirection, x: Threshold, duration: number): void {
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("rotate_" + get_rotate_direction_string(dir) + "(" + get_speed_value(x) + ")"))
         basic.pause(duration * 1000)
         pins.i2cWriteBuffer(22, Buffer.fromUTF8("rotate_" + get_rotate_direction_string(dir) + "(0)"))
@@ -410,6 +422,8 @@ namespace ginobot {
         basic.pause(50)
     }
 //-----------------------------------------------------------------------------------------------------------------------------//
+    
+// "Sensors" BLOCKS
     /**
      * Get Ultrasonic distance in cm
      */
@@ -421,12 +435,24 @@ namespace ginobot {
     } 
 
     /**
- * Get Ultrasonic distance in cm
- */
+     * Get Ultrasonic distance in cm
+     */
     //% block="get IR $sensorPos value" weight=10 color="#D400D4"
     //% subcategory=Sensors
     export function getIR_digital(sensorPos: SensorsPosition): boolean {
         let readValue = i2cRead("get_IR_" + get_sensors_position_string(sensorPos) + "_digital()");
         return readValue ? true : false;
+    }
+
+    /**
+    * Sets the threshold value of the IR sensor (0-100)
+    * @param IR position
+    * @param threshold value
+    */
+    //% block="set IR $sensorPos threshold $t" weight=10 color="#D400D4"
+    //% subcategory=Sensors
+    export function set_ir_threshold(sensorPos: SensorsPosition, t: Threshold): void {
+        pins.i2cWriteBuffer(22, Buffer.fromUTF8("set_IR_" + get_sensors_position_string(sensorPos) + "_threshold(" + get_ir_threshold_value(t)+")"))
+        basic.pause(50)
     }
 }
