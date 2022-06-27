@@ -1,5 +1,7 @@
-def on_forever():
-    ginobot.set_front_lights_rgb(0x00ffff)
-    ginobot.set_front_lights_rgb(0xff0000)
-    ginobot.set_buzzer_freq(0)
-basic.forever(on_forever)
+def on_button_pressed_a():
+    pass
+input.on_button_pressed(Button.A, on_button_pressed_a)
+
+testVar = 0
+ginobot.move(MoveDirection.FORWARD, Threshold.LOW)
+ginobot.move_duration(MoveDirection.FORWARD, Threshold.LOW, min(0, 0))
