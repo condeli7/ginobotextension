@@ -1,5 +1,5 @@
 
-> Open this page at [https://condeli7.github.io/ginobotextension/](https://condeli7.github.io/ginobotextension/)
+> Open this page at [https://enginotoys.github.io/Ginobot/](https://enginotoys.github.io/Ginobot/)
 
 ## Use as Extension
 
