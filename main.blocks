@@ -1,1 +1,1 @@
-<xml xmlns="https://developers.google.com/blockly/xml"><variables><variable id="GQiiIwTQcGalK[B*L6a|">testVar</variable></variables></xml>
+<xml xmlns="https://developers.google.com/blockly/xml"><block type="pxt-on-start" id="~eFWPB~v{k[EYl0=jU77" x="0" y="0"></block><block type="ginobot_move" id="%5pUC))VkK|U=QYKTOTu" disabled="true" x="5" y="205"><field name="dir">MoveDirection.Forward</field><field name="x">Threshold.Very_Low</field></block></xml>
