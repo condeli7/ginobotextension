@@ -2,6 +2,8 @@
  * Speed
  */
 enum Threshold {
+    //% block="very_low"
+    Very_Low,
     //% block="low"
     Low,
     //% block="medium"
@@ -94,7 +96,9 @@ namespace ginobot {
 
     function get_speed_value(x: Threshold): string {
         let speedNum = "0"
-        if (x == Threshold.Low) {
+        if (x == Threshold.Very_Low) {
+            speedNum = "55"
+        } else if (x == Threshold.Low) {
             speedNum = "60"
         } else if (x == Threshold.Medium) {
             speedNum = "80"
@@ -106,7 +110,9 @@ namespace ginobot {
 
     function get_ir_threshold_value(x: Threshold): string {
         let thr = "0"
-        if (x == Threshold.Low) {
+        if (x == Threshold.Very_Low) {
+            thr = "15"
+        } else if (x == Threshold.Low) {
             thr = "30"
         } else if (x == Threshold.Medium) {
             thr = "60"
