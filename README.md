@@ -20,7 +20,7 @@ To edit this repository in MakeCode.
 
 ## Blocks preview
 
-![A rendered view of the blocks](https://github.com/enginotoys/Ginobot/raw/master/.github/makecode/blocks.jpg)
+![A rendered view of the blocks](https://github.com/enginotoys/Ginobot/raw/master/.github/makecode/blocks.png)
 
 #### Metadata (used for search, rendering)
 
